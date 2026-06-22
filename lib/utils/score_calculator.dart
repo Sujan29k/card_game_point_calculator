@@ -33,18 +33,8 @@ class ScoreCalculator {
 
   // ─── Marriage ──────────────────────────────────────────────────────────────
 
-  static int marriageScore({
-    required int points,
-    required bool hasMaal,
-    required bool hasSeen,
-    required bool isMarriage,
-    required Map<String, int> bonusConfig,
-  }) {
-    var total = points;
-    if (hasMaal) total += bonusConfig['maal'] ?? 10;
-    if (hasSeen) total += bonusConfig['seen'] ?? 10;
-    if (isMarriage) total += bonusConfig['marriage'] ?? 30;
-    return total;
+  static int marriageScore({required int points}) {
+    return points;
   }
 
   // ─── Display ───────────────────────────────────────────────────────────────

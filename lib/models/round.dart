@@ -1,3 +1,5 @@
+import 'marriage_round_meta.dart';
+
 class GameRound {
   final String id;
   final int roundNumber;
@@ -10,6 +12,10 @@ class GameRound {
   /// Their score for this round is counted in the Special Game, not the Regular Game.
   final List<String> specialWinnerIds;
 
+  /// Per-player Marriage combination metadata for this deal.
+  /// Null for non-Marriage rounds.
+  final Map<String, MarriageRoundMeta>? marriageMeta;
+
   const GameRound({
     required this.id,
     required this.roundNumber,
@@ -18,6 +24,7 @@ class GameRound {
     required this.timestamp,
     this.isEdited = false,
     this.specialWinnerIds = const [],
+    this.marriageMeta,
   });
 
   bool get hasSpecialWinner => specialWinnerIds.isNotEmpty;
@@ -30,6 +37,7 @@ class GameRound {
     DateTime? timestamp,
     bool? isEdited,
     List<String>? specialWinnerIds,
+    Map<String, MarriageRoundMeta>? marriageMeta,
   }) {
     return GameRound(
       id: id ?? this.id,
@@ -39,6 +47,7 @@ class GameRound {
       timestamp: timestamp ?? this.timestamp,
       isEdited: isEdited ?? this.isEdited,
       specialWinnerIds: specialWinnerIds ?? this.specialWinnerIds,
+      marriageMeta: marriageMeta ?? this.marriageMeta,
     );
   }
 
@@ -51,10 +60,15 @@ class GameRound {
       'timestamp': timestamp.toIso8601String(),
       'isEdited': isEdited,
       'specialWinnerIds': specialWinnerIds,
+      if (marriageMeta != null)
+        'marriageMeta': marriageMeta!.map(
+          (k, v) => MapEntry(k, v.toJson()),
+        ),
     };
   }
 
   factory GameRound.fromJson(Map<String, dynamic> json) {
+    final rawMeta = json['marriageMeta'] as Map<String, dynamic>?;
     return GameRound(
       id: json['id'] as String,
       roundNumber: (json['roundNumber'] as num).toInt(),
@@ -69,6 +83,12 @@ class GameRound {
       specialWinnerIds: (json['specialWinnerIds'] as List<dynamic>? ?? [])
           .map((e) => e.toString())
           .toList(),
+      marriageMeta: rawMeta?.map(
+        (k, v) => MapEntry(
+          k,
+          MarriageRoundMeta.fromJson(v as Map<String, dynamic>),
+        ),
+      ),
     );
   }
 }
